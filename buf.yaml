@@ -1,0 +1,25 @@
+version: v1
+name: github.com/bhatti/todo-api-errors
+deps:
+  - buf.build/googleapis/googleapis
+  - buf.build/grpc-ecosystem/grpc-gateway
+  - buf.build/bufbuild/protovalidate
+breaking:
+  use:
+    - FILE
+lint:
+  use:
+    - STANDARD
+  except:
+    - PACKAGE_VERSION_SUFFIX
+    - SERVICE_SUFFIX
+    - RPC_REQUEST_RESPONSE_UNIQUE
+    - ENUM_VALUE_PREFIX
+  ignore_only:
+    RPC_RESPONSE_STANDARD_NAME:
+      - api/proto/todo/v1/todo.proto
+  ignore:
+    - vendor
+build:
+  excludes:
+    - vendor

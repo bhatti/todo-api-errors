@@ -1,0 +1,488 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "api/proto/todo/v1/todo.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "TodoService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/tasks": {
+      "get": {
+        "summary": "ListTasks retrieves all tasks",
+        "operationId": "TodoService_ListTasks",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListTasksResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "pageSize",
+            "description": "Maximum number of tasks to return",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageToken",
+            "description": "Page token for pagination",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "filter",
+            "description": "Filter expression",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "orderBy",
+            "description": "Order by expression",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "TodoService"
+        ]
+      },
+      "post": {
+        "summary": "CreateTask creates a new task",
+        "operationId": "TodoService_CreateTask",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1Task"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateTaskRequest"
+            }
+          }
+        ],
+        "tags": [
+          "TodoService"
+        ]
+      }
+    },
+    "/v1/tasks:batchCreate": {
+      "post": {
+        "summary": "BatchCreateTasks creates multiple tasks at once",
+        "operationId": "TodoService_BatchCreateTasks",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1BatchCreateTasksResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1BatchCreateTasksRequest"
+            }
+          }
+        ],
+        "tags": [
+          "TodoService"
+        ]
+      }
+    },
+    "/v1/{name}": {
+      "get": {
+        "summary": "GetTask retrieves a specific task",
+        "operationId": "TodoService_GetTask",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1Task"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "description": "Resource name of the task",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "tasks/[^/]+"
+          }
+        ],
+        "tags": [
+          "TodoService"
+        ]
+      },
+      "delete": {
+        "summary": "DeleteTask removes a task",
+        "operationId": "TodoService_DeleteTask",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteTaskResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "description": "Resource name of the task",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "tasks/[^/]+"
+          }
+        ],
+        "tags": [
+          "TodoService"
+        ]
+      }
+    },
+    "/v1/{task.name}": {
+      "patch": {
+        "summary": "UpdateTask updates an existing task",
+        "operationId": "TodoService_UpdateTask",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1Task"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "task.name",
+            "description": "Resource name of the task",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "tasks/[^/]+"
+          },
+          {
+            "name": "task",
+            "description": "Task to update",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "title": "Task title"
+                },
+                "description": {
+                  "type": "string",
+                  "title": "Task description"
+                },
+                "status": {
+                  "$ref": "#/definitions/todov1Status",
+                  "title": "Task status"
+                },
+                "priority": {
+                  "$ref": "#/definitions/v1Priority",
+                  "title": "Task priority"
+                },
+                "dueDate": {
+                  "type": "string",
+                  "format": "date-time",
+                  "title": "Due date for the task"
+                },
+                "createTime": {
+                  "type": "string",
+                  "format": "date-time",
+                  "title": "Task creation time",
+                  "readOnly": true
+                },
+                "updateTime": {
+                  "type": "string",
+                  "format": "date-time",
+                  "title": "Task last update time",
+                  "readOnly": true
+                },
+                "createdBy": {
+                  "type": "string",
+                  "title": "User who created the task",
+                  "readOnly": true
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Tags associated with the task"
+                }
+              },
+              "title": "Task to update",
+              "required": [
+                "title",
+                "status",
+                "task"
+              ]
+            }
+          }
+        ],
+        "tags": [
+          "TodoService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "googlerpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "todov1Status": {
+      "type": "string",
+      "enum": [
+        "STATUS_UNSPECIFIED",
+        "STATUS_PENDING",
+        "STATUS_IN_PROGRESS",
+        "STATUS_COMPLETED",
+        "STATUS_CANCELLED"
+      ],
+      "default": "STATUS_UNSPECIFIED",
+      "title": "Task status enumeration"
+    },
+    "v1BatchCreateTasksRequest": {
+      "type": "object",
+      "properties": {
+        "requests": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1CreateTaskRequest"
+          },
+          "title": "Tasks to create"
+        }
+      },
+      "title": "BatchCreateTasksRequest message",
+      "required": [
+        "requests"
+      ]
+    },
+    "v1BatchCreateTasksResponse": {
+      "type": "object",
+      "properties": {
+        "tasks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Task"
+          },
+          "title": "Created tasks"
+        }
+      },
+      "title": "BatchCreateTasksResponse message"
+    },
+    "v1CreateTaskRequest": {
+      "type": "object",
+      "properties": {
+        "task": {
+          "$ref": "#/definitions/v1Task",
+          "title": "Task to create"
+        }
+      },
+      "title": "CreateTaskRequest message",
+      "required": [
+        "task"
+      ]
+    },
+    "v1DeleteTaskResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "title": "Confirmation message"
+        }
+      },
+      "title": "DeleteTaskResponse message"
+    },
+    "v1ListTasksResponse": {
+      "type": "object",
+      "properties": {
+        "tasks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Task"
+          },
+          "title": "List of tasks"
+        },
+        "nextPageToken": {
+          "type": "string",
+          "title": "Token for next page"
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int32",
+          "title": "Total number of tasks"
+        }
+      },
+      "title": "ListTasksResponse message"
+    },
+    "v1Priority": {
+      "type": "string",
+      "enum": [
+        "PRIORITY_UNSPECIFIED",
+        "PRIORITY_LOW",
+        "PRIORITY_MEDIUM",
+        "PRIORITY_HIGH",
+        "PRIORITY_CRITICAL"
+      ],
+      "default": "PRIORITY_UNSPECIFIED",
+      "title": "Task priority enumeration"
+    },
+    "v1Task": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Resource name of the task",
+          "readOnly": true
+        },
+        "title": {
+          "type": "string",
+          "title": "Task title"
+        },
+        "description": {
+          "type": "string",
+          "title": "Task description"
+        },
+        "status": {
+          "$ref": "#/definitions/todov1Status",
+          "title": "Task status"
+        },
+        "priority": {
+          "$ref": "#/definitions/v1Priority",
+          "title": "Task priority"
+        },
+        "dueDate": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Due date for the task"
+        },
+        "createTime": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Task creation time",
+          "readOnly": true
+        },
+        "updateTime": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Task last update time",
+          "readOnly": true
+        },
+        "createdBy": {
+          "type": "string",
+          "title": "User who created the task",
+          "readOnly": true
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Tags associated with the task"
+        }
+      },
+      "title": "Task represents a TODO item",
+      "required": [
+        "title",
+        "status"
+      ]
+    }
+  }
+}

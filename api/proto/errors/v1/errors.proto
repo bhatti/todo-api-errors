@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+package errors.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/any.proto";
+
+option go_package = "github.com/bhatti/todo-api-errors/api/proto/errors/v1;errors";
+
+// ErrorDetail provides a structured, machine-readable error payload.
+// It is designed to be embedded in the `details` field of a `google.rpc.Status` message.
+message ErrorDetail {
+  // A unique, application-specific error code.
+  string code = 1;
+  // A short, human-readable summary of the problem type.
+  string title = 2;
+  // A human-readable explanation specific to this occurrence of the problem.
+  string detail = 3;
+  // A list of validation errors, useful for INVALID_ARGUMENT responses.
+  repeated FieldViolation field_violations = 4;
+  // Optional trace ID for request correlation
+  string trace_id = 5;
+  // Optional timestamp when the error occurred
+  google.protobuf.Timestamp timestamp = 6;
+  // Optional instance path where the error occurred
+  string instance = 7;
+  // Optional extensions for additional error context
+  map<string, google.protobuf.Any> extensions = 8;
+}
+
+// Describes a single validation failure.
+message FieldViolation {
+  // The path to the field that failed validation, e.g., "title".
+  string field = 1;
+  // A developer-facing description of the validation rule that failed.
+  string description = 2;
+  // Application-specific error code for this validation failure
+  string code = 3;
+}
+
+// AppErrorCode defines a list of standardized, application-specific error codes.
+enum AppErrorCode {
+  APP_ERROR_CODE_UNSPECIFIED = 0;
+
+  // Validation failures
+  VALIDATION_FAILED = 1;
+  REQUIRED_FIELD = 2;
+  TOO_SHORT = 3;
+  TOO_LONG = 4;
+  INVALID_FORMAT = 5;
+  MUST_BE_FUTURE = 6;
+  INVALID_VALUE = 7;
+  DUPLICATE_TAG = 8;
+  INVALID_TAG_FORMAT = 9;
+  OVERDUE_COMPLETION = 10;
+  EMPTY_BATCH = 11;
+  BATCH_TOO_LARGE = 12;
+  DUPLICATE_TITLE = 13;
+
+  // Resource errors
+  RESOURCE_NOT_FOUND = 1001;
+  RESOURCE_CONFLICT = 1002;
+
+  // Authentication and authorization
+  AUTHENTICATION_FAILED = 2001;
+  PERMISSION_DENIED = 2002;
+
+  // Rate limiting and service availability
+  RATE_LIMIT_EXCEEDED = 3001;
+  SERVICE_UNAVAILABLE = 3002;
+
+  // Internal errors
+  INTERNAL_ERROR = 9001;
+}

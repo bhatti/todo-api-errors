@@ -1,0 +1,10 @@
+ graph TB
+     Client[HTTP/gRPC Client] --> Gateway[gRPC Gateway]
+     Client --> gRPC[gRPC Server]
+     Gateway --> gRPC
+     gRPC --> Service[Todo Service]
+     Service --> Validation[Proto Validation]
+     Service --> Repository[In-Memory Repository]
+     Service --> ErrorHandler[Error Handler]
+     ErrorHandler --> HTTP[HTTP Error Response]
+     ErrorHandler --> gRPCError[gRPC Status Response]

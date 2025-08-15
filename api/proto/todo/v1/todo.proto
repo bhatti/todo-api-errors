@@ -1,0 +1,262 @@
+syntax = "proto3";
+
+package todo.v1;
+
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/field_mask.proto";
+import "buf/validate/validate.proto";
+
+option go_package = "github.com/bhatti/todo-api-errors/api/proto/todo/v1;todo";
+
+// TodoService provides task management operations
+service TodoService {
+  // CreateTask creates a new task
+  rpc CreateTask(CreateTaskRequest) returns (Task) {
+    option (google.api.http) = {
+      post: "/v1/tasks"
+      body: "*"
+    };
+  }
+
+  // GetTask retrieves a specific task
+  rpc GetTask(GetTaskRequest) returns (Task) {
+    option (google.api.http) = {
+      get: "/v1/{name=tasks/*}"
+    };
+  }
+
+  // ListTasks retrieves all tasks
+  rpc ListTasks(ListTasksRequest) returns (ListTasksResponse) {
+    option (google.api.http) = {
+      get: "/v1/tasks"
+    };
+  }
+
+  // UpdateTask updates an existing task
+  rpc UpdateTask(UpdateTaskRequest) returns (Task) {
+    option (google.api.http) = {
+      patch: "/v1/{task.name=tasks/*}"
+      body: "task"
+    };
+  }
+
+  // DeleteTask removes a task
+  rpc DeleteTask(DeleteTaskRequest) returns (DeleteTaskResponse) {
+    option (google.api.http) = {
+      delete: "/v1/{name=tasks/*}"
+    };
+  }
+
+  // BatchCreateTasks creates multiple tasks at once
+  rpc BatchCreateTasks(BatchCreateTasksRequest) returns (BatchCreateTasksResponse) {
+    option (google.api.http) = {
+      post: "/v1/tasks:batchCreate"
+      body: "*"
+    };
+  }
+}
+
+// Task represents a TODO item
+message Task {
+  option (google.api.resource) = {
+    type: "todo.example.com/Task"
+    pattern: "tasks/{task}"
+    singular: "task"
+    plural: "tasks"
+  };
+
+  // Resource name of the task
+  string name = 1 [
+    (google.api.field_behavior) = IDENTIFIER,
+    (google.api.field_behavior) = OUTPUT_ONLY
+  ];
+
+  // Task title
+  string title = 2 [
+    (google.api.field_behavior) = REQUIRED,
+    (buf.validate.field).string = {
+      min_len: 1
+      max_len: 200
+    }
+  ];
+
+  // Task description
+  string description = 3 [
+    (google.api.field_behavior) = OPTIONAL,
+    (buf.validate.field).string = {
+      max_len: 100
+    }
+  ];
+
+  // Task status
+  Status status = 4 [
+    (google.api.field_behavior) = REQUIRED
+  ];
+
+  // Task priority
+  Priority priority = 5 [
+    (google.api.field_behavior) = OPTIONAL
+  ];
+
+  // Due date for the task
+  google.protobuf.Timestamp due_date = 6 [
+    (google.api.field_behavior) = OPTIONAL,
+    (buf.validate.field).timestamp = {
+      gt_now: true
+    }
+  ];
+
+  // Task creation time
+  google.protobuf.Timestamp create_time = 7 [
+    (google.api.field_behavior) = OUTPUT_ONLY
+  ];
+
+  // Task last update time
+  google.protobuf.Timestamp update_time = 8 [
+    (google.api.field_behavior) = OUTPUT_ONLY
+  ];
+
+  // User who created the task
+  string created_by = 9 [
+    (google.api.field_behavior) = OUTPUT_ONLY
+  ];
+
+  // Tags associated with the task
+  repeated string tags = 10 [
+    (buf.validate.field).repeated = {
+      max_items: 10
+      items: {
+        string: {
+          pattern: "^[a-z0-9-]+$"
+          max_len: 50
+        }
+      }
+    }
+  ];
+}
+
+// Task status enumeration
+enum Status {
+  STATUS_UNSPECIFIED = 0;
+  STATUS_PENDING = 1;
+  STATUS_IN_PROGRESS = 2;
+  STATUS_COMPLETED = 3;
+  STATUS_CANCELLED = 4;
+}
+
+// Task priority enumeration
+enum Priority {
+  PRIORITY_UNSPECIFIED = 0;
+  PRIORITY_LOW = 1;
+  PRIORITY_MEDIUM = 2;
+  PRIORITY_HIGH = 3;
+  PRIORITY_CRITICAL = 4;
+}
+
+// CreateTaskRequest message
+message CreateTaskRequest {
+  // Task to create
+  Task task = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (buf.validate.field).required = true
+  ];
+}
+
+// GetTaskRequest message
+message GetTaskRequest {
+  // Resource name of the task
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+      type: "todo.example.com/Task"
+    },
+    (buf.validate.field).string = {
+      pattern: "^tasks/[a-zA-Z0-9-]+$"
+    }
+  ];
+}
+
+// ListTasksRequest message
+message ListTasksRequest {
+  // Maximum number of tasks to return
+  int32 page_size = 1 [
+    (buf.validate.field).int32 = {
+      gte: 0
+      lte: 100
+    }
+  ];
+
+  // Page token for pagination
+  string page_token = 2;
+
+  // Filter expression
+  string filter = 3;
+
+  // Order by expression
+  string order_by = 4;
+}
+
+// ListTasksResponse message
+message ListTasksResponse {
+  // List of tasks
+  repeated Task tasks = 1;
+
+  // Token for next page
+  string next_page_token = 2;
+
+  // Total number of tasks
+  int32 total_size = 3;
+}
+
+// UpdateTaskRequest message
+message UpdateTaskRequest {
+  // Task to update
+  Task task = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (buf.validate.field).required = true
+  ];
+
+  // Fields to update
+  google.protobuf.FieldMask update_mask = 2 [
+    (google.api.field_behavior) = REQUIRED,
+    (buf.validate.field).required = true
+  ];
+}
+
+// DeleteTaskRequest message
+message DeleteTaskRequest {
+  // Resource name of the task
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+      type: "todo.example.com/Task"
+    }
+  ];
+}
+
+// DeleteTaskResponse message
+message DeleteTaskResponse {
+  // Confirmation message
+  string message = 1;
+}
+
+// BatchCreateTasksRequest message
+message BatchCreateTasksRequest {
+  // Tasks to create
+  repeated CreateTaskRequest requests = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (buf.validate.field).repeated = {
+      min_items: 1
+      max_items: 100
+    }
+  ];
+}
+
+// BatchCreateTasksResponse message
+message BatchCreateTasksResponse {
+  // Created tasks
+  repeated Task tasks = 1;
+}
