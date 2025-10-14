@@ -1,0 +1,17 @@
+stateDiagram-v2
+    [*] --> LoadProtos: Start Analysis
+    LoadProtos --> GitDiff: Read Proto Files
+    GitDiff --> BufCheck: Get Git Differences
+    BufCheck --> Analysis: Run Buf Breaking
+    Analysis --> LLMReview: Static Analysis Complete
+    LLMReview --> GenerateReport: AI Analysis
+    GenerateReport --> Decision: Create Report
+    Decision --> [*]: Complete
+
+    style LoadProtos fill:#4ECDC4,color:#FFFFFF
+    style GitDiff fill:#4ECDC4,color:#FFFFFF
+    style BufCheck fill:#95E77E,color:#000000
+    style Analysis fill:#95E77E,color:#000000
+    style LLMReview fill:#FFE66D,color:#000000
+    style GenerateReport fill:#FFE66D,color:#000000
+    style Decision fill:#FF6B6B,color:#FFFFFF

@@ -1,0 +1,20 @@
+# Minimal requirements for API compatibility checker
+# Use this if you encounter issues with the full requirements.txt
+
+# Core dependencies
+langchain>=0.1.0
+langchain-google-vertexai>=0.1.0
+langgraph>=0.0.50
+pydantic>=2.0.0
+
+# Google Cloud dependencies
+google-cloud-aiplatform>=1.38.0
+google-auth>=2.25.0
+
+# Essential utilities
+pyyaml>=6.0
+python-dotenv>=1.0.0
+
+# For better output
+rich>=13.7.0
+click>=8.1.0

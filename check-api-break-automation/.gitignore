@@ -1,0 +1,9 @@
+
+# Test results
+results/
+*.log
+test_*.json
+
+# Test output files
+*.original
+*.bak

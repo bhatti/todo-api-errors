@@ -1,5 +1,15 @@
 version: v1
 name: github.com/bhatti/todo-api-errors
+build:
+  excludes:
+    - vendor
+    - check-api-break-automation/venv
+    - check-api-break-automation/__pycache__
+    - check-api-break-automation/.pytest_cache
+    - "**/.venv"
+    - "**/venv"
+    - "**/__pycache__"
+    - "**/.pytest_cache"
 deps:
   - buf.build/googleapis/googleapis
   - buf.build/grpc-ecosystem/grpc-gateway
@@ -15,11 +25,9 @@ lint:
     - SERVICE_SUFFIX
     - RPC_REQUEST_RESPONSE_UNIQUE
     - ENUM_VALUE_PREFIX
+    - PACKAGE_DIRECTORY_MATCH
   ignore_only:
     RPC_RESPONSE_STANDARD_NAME:
       - api/proto/todo/v1/todo.proto
   ignore:
-    - vendor
-build:
-  excludes:
     - vendor
