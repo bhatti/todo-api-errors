@@ -1,0 +1,28 @@
+graph TB
+    subgraph "Input Layer"
+        A[Proto Files] --> B[Proto Parser]
+    end
+
+    subgraph "Analysis Layer"
+        B --> C[Field Extraction]
+        C --> D[LangGraph Workflow]
+        D --> E[Vertex AI/Gemini]
+        E --> F[PII Classification]
+    end
+
+    subgraph "Annotation Layer"
+        F --> G[Sensitivity Mapping]
+        G --> H[Proto Generator]
+        H --> I[Annotated Proto]
+    end
+
+    subgraph "Validation Layer"
+        I --> J[Buf Validation]
+        J --> K[Accuracy Check]
+        K --> L[Report Generation]
+    end
+
+    style A fill:#FF6B6B,stroke:#FFFFFF,stroke-width:3px,color:#FFFFFF
+    style E fill:#FFE66D,stroke:#FFFFFF,stroke-width:3px,color:#000000
+    style I fill:#95E77E,stroke:#FFFFFF,stroke-width:3px,color:#000000
+    style L fill:#4ECDC4,stroke:#FFFFFF,stroke-width:3px,color:#FFFFFF

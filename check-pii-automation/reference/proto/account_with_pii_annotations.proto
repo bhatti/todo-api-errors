@@ -1,0 +1,455 @@
+syntax = "proto3";
+
+package pii.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/empty.proto";
+import "api/proto/pii/v1/sensitivity.proto";
+
+option java_multiple_files = true;
+option java_outer_classname = "AccountAnnotatedProto";
+option java_package = "com.example.pii.v1";
+option go_package = "github.com/bhatti/todo-api-errors/api/proto/pii/v1;pii";
+
+// AccountService provides CRUD operations for user accounts
+// This is the REFERENCE version showing how PII should be properly annotated
+service AccountService {
+  // Create a new account - Contains HIGH sensitivity PII
+  rpc CreateAccount(CreateAccountRequest) returns (Account) {
+    option (pii.v1.method_sensitivity) = HIGH;
+    option (pii.v1.audit_pii_access) = true;
+  }
+
+  // Get account details - Returns HIGH sensitivity PII
+  rpc GetAccount(GetAccountRequest) returns (Account) {
+    option (pii.v1.method_sensitivity) = HIGH;
+    option (pii.v1.audit_pii_access) = true;
+  }
+
+  // Update account information - Handles HIGH sensitivity PII
+  rpc UpdateAccount(UpdateAccountRequest) returns (Account) {
+    option (pii.v1.method_sensitivity) = HIGH;
+    option (pii.v1.audit_pii_access) = true;
+  }
+
+  // Delete an account - Only uses account ID (LOW sensitivity)
+  rpc DeleteAccount(DeleteAccountRequest) returns (google.protobuf.Empty) {
+    option (pii.v1.method_sensitivity) = LOW;
+    option (pii.v1.audit_pii_access) = true;
+  }
+
+  // List accounts - Returns multiple accounts with HIGH sensitivity PII
+  rpc ListAccounts(ListAccountsRequest) returns (ListAccountsResponse) {
+    option (pii.v1.method_sensitivity) = HIGH;
+    option (pii.v1.audit_pii_access) = true;
+  }
+
+  // Search accounts - Uses and returns HIGH sensitivity PII
+  rpc SearchAccounts(SearchAccountsRequest) returns (SearchAccountsResponse) {
+    option (pii.v1.method_sensitivity) = HIGH;
+    option (pii.v1.audit_pii_access) = true;
+  }
+}
+
+// Account represents a user account with comprehensive PII annotations
+message Account {
+  option (pii.v1.message_sensitivity) = HIGH;
+
+  // System identifiers
+  string id = 1 [
+    (pii.v1.sensitivity) = LOW,
+    (pii.v1.pii_type) = CUSTOMER_ID
+  ];
+
+  string account_number = 2 [
+    (pii.v1.sensitivity) = MEDIUM,
+    (pii.v1.pii_type) = CUSTOMER_ID
+  ];
+
+  AccountStatus status = 3;  // No PII
+  google.protobuf.Timestamp created_at = 4;  // No PII
+  google.protobuf.Timestamp updated_at = 5;  // No PII
+
+  // Personal information - Names are LOW sensitivity
+  string first_name = 10 [
+    (pii.v1.sensitivity) = LOW,
+    (pii.v1.pii_type) = NAME
+  ];
+
+  string last_name = 11 [
+    (pii.v1.sensitivity) = LOW,
+    (pii.v1.pii_type) = NAME
+  ];
+
+  string middle_name = 12 [
+    (pii.v1.sensitivity) = LOW,
+    (pii.v1.pii_type) = NAME
+  ];
+
+  // Date of birth is MEDIUM sensitivity
+  string date_of_birth = 13 [
+    (pii.v1.sensitivity) = MEDIUM,
+    (pii.v1.pii_type) = DATE_OF_BIRTH
+  ];
+
+  string gender = 14 [
+    (pii.v1.sensitivity) = LOW,
+    (pii.v1.pii_type) = GENDER
+  ];
+
+  // Contact information - Personal emails/phones are MEDIUM
+  string email = 20 [
+    (pii.v1.sensitivity) = MEDIUM,
+    (pii.v1.pii_type) = EMAIL_PERSONAL
+  ];
+
+  string personal_email = 21 [
+    (pii.v1.sensitivity) = MEDIUM,
+    (pii.v1.pii_type) = EMAIL_PERSONAL
+  ];
+
+  string work_email = 22 [
+    (pii.v1.sensitivity) = LOW,
+    (pii.v1.pii_type) = EMAIL_WORK
+  ];
+
+  string phone = 23 [
+    (pii.v1.sensitivity) = MEDIUM,
+    (pii.v1.pii_type) = PHONE_PERSONAL
+  ];
+
+  string mobile_phone = 24 [
+    (pii.v1.sensitivity) = MEDIUM,
+    (pii.v1.pii_type) = PHONE_PERSONAL
+  ];
+
+  string work_phone = 25 [
+    (pii.v1.sensitivity) = LOW,
+    (pii.v1.pii_type) = PHONE_WORK
+  ];
+
+  // Addresses - Home is MEDIUM, Work is LOW
+  Address home_address = 30 [
+    (pii.v1.sensitivity) = MEDIUM,
+    (pii.v1.pii_type) = ADDRESS_HOME
+  ];
+
+  Address work_address = 31 [
+    (pii.v1.sensitivity) = LOW,
+    (pii.v1.pii_type) = ADDRESS_WORK
+  ];
+
+  Address mailing_address = 32 [
+    (pii.v1.sensitivity) = MEDIUM,
+    (pii.v1.pii_type) = ADDRESS_HOME
+  ];
+
+  // Government IDs - ALL are HIGH sensitivity
+  string ssn = 40 [
+    (pii.v1.sensitivity) = HIGH,
+    (pii.v1.pii_type) = SSN
+  ];
+
+  string tax_id = 41 [
+    (pii.v1.sensitivity) = HIGH,
+    (pii.v1.pii_type) = TAX_ID
+  ];
+
+  string passport_number = 42 [
+    (pii.v1.sensitivity) = HIGH,
+    (pii.v1.pii_type) = PASSPORT
+  ];
+
+  string drivers_license = 43 [
+    (pii.v1.sensitivity) = HIGH,
+    (pii.v1.pii_type) = DRIVERS_LICENSE
+  ];
+
+  string national_id = 44 [
+    (pii.v1.sensitivity) = HIGH,
+    (pii.v1.pii_type) = NATIONAL_ID
+  ];
+
+  // Financial information - ALL are HIGH sensitivity
+  string bank_account_number = 50 [
+    (pii.v1.sensitivity) = HIGH,
+    (pii.v1.pii_type) = BANK_ACCOUNT
+  ];
+
+  string routing_number = 51 [
+    (pii.v1.sensitivity) = HIGH,
+    (pii.v1.pii_type) = ROUTING_NUMBER
+  ];
+
+  string credit_card_number = 52 [
+    (pii.v1.sensitivity) = HIGH,
+    (pii.v1.pii_type) = CREDIT_CARD
+  ];
+
+  string credit_card_cvv = 53 [
+    (pii.v1.sensitivity) = HIGH,
+    (pii.v1.pii_type) = CREDIT_CARD
+  ];
+
+  string credit_card_expiry = 54 [
+    (pii.v1.sensitivity) = MEDIUM,
+    (pii.v1.pii_type) = CREDIT_CARD
+  ];
+
+  double annual_income = 55 [
+    (pii.v1.sensitivity) = HIGH
+  ];
+
+  int32 credit_score = 56 [
+    (pii.v1.sensitivity) = HIGH
+  ];
+
+  // Employment - Mixed sensitivity
+  string employer_name = 60 [
+    (pii.v1.sensitivity) = LOW
+  ];
+
+  string job_title = 61 [
+    (pii.v1.sensitivity) = LOW
+  ];
+
+  string employee_id = 62 [
+    (pii.v1.sensitivity) = MEDIUM
+  ];
+
+  double salary = 63 [
+    (pii.v1.sensitivity) = HIGH
+  ];
+
+  // Medical information - ALL are HIGH sensitivity
+  string medical_record_number = 70 [
+    (pii.v1.sensitivity) = HIGH,
+    (pii.v1.pii_type) = MEDICAL_RECORD
+  ];
+
+  string health_insurance_id = 71 [
+    (pii.v1.sensitivity) = HIGH,
+    (pii.v1.pii_type) = HEALTH_INSURANCE
+  ];
+
+  repeated string medical_conditions = 72 [
+    (pii.v1.sensitivity) = HIGH
+  ];
+
+  repeated string prescriptions = 73 [
+    (pii.v1.sensitivity) = HIGH
+  ];
+
+  // Authentication - ALL are HIGH sensitivity except username
+  string username = 80 [
+    (pii.v1.sensitivity) = MEDIUM,
+    (pii.v1.pii_type) = USERNAME
+  ];
+
+  string password_hash = 81 [
+    (pii.v1.sensitivity) = HIGH,
+    (pii.v1.pii_type) = PASSWORD
+  ];
+
+  string security_question = 82 [
+    (pii.v1.sensitivity) = HIGH
+  ];
+
+  string security_answer = 83 [
+    (pii.v1.sensitivity) = HIGH
+  ];
+
+  string api_key = 84 [
+    (pii.v1.sensitivity) = HIGH,
+    (pii.v1.pii_type) = API_KEY
+  ];
+
+  string access_token = 85 [
+    (pii.v1.sensitivity) = HIGH,
+    (pii.v1.pii_type) = API_KEY
+  ];
+
+  // Device/Network information - MEDIUM sensitivity
+  string ip_address = 90 [
+    (pii.v1.sensitivity) = MEDIUM,
+    (pii.v1.pii_type) = IP_ADDRESS
+  ];
+
+  string device_id = 91 [
+    (pii.v1.sensitivity) = MEDIUM,
+    (pii.v1.pii_type) = DEVICE_ID
+  ];
+
+  string user_agent = 92 [
+    (pii.v1.sensitivity) = LOW
+  ];
+
+  Location last_location = 93 [
+    (pii.v1.sensitivity) = MEDIUM
+  ];
+
+  // Additional fields
+  map<string, string> metadata = 100 [
+    (pii.v1.sensitivity) = MEDIUM  // Could contain PII
+  ];
+
+  repeated string tags = 101;  // No PII expected
+}
+
+// Address message with field-level annotations
+message Address {
+  option (pii.v1.message_sensitivity) = MEDIUM;
+
+  string street_line1 = 1 [
+    (pii.v1.sensitivity) = MEDIUM
+  ];
+
+  string street_line2 = 2 [
+    (pii.v1.sensitivity) = MEDIUM
+  ];
+
+  string city = 3 [
+    (pii.v1.sensitivity) = LOW
+  ];
+
+  string state = 4 [
+    (pii.v1.sensitivity) = LOW
+  ];
+
+  string postal_code = 5 [
+    (pii.v1.sensitivity) = MEDIUM
+  ];
+
+  string country = 6 [
+    (pii.v1.sensitivity) = LOW
+  ];
+}
+
+// Location for geolocation data
+message Location {
+  option (pii.v1.message_sensitivity) = MEDIUM;
+
+  double latitude = 1 [
+    (pii.v1.sensitivity) = MEDIUM
+  ];
+
+  double longitude = 2 [
+    (pii.v1.sensitivity) = MEDIUM
+  ];
+
+  double accuracy = 3;
+  google.protobuf.Timestamp timestamp = 4;
+}
+
+// Account status enum - No PII
+enum AccountStatus {
+  ACCOUNT_STATUS_UNSPECIFIED = 0;
+  ACTIVE = 1;
+  SUSPENDED = 2;
+  CLOSED = 3;
+  PENDING = 4;
+}
+
+// Request/Response messages with appropriate annotations
+
+message CreateAccountRequest {
+  option (pii.v1.message_sensitivity) = HIGH;
+
+  Account account = 1 [
+    (pii.v1.sensitivity) = HIGH
+  ];
+
+  string idempotency_key = 2;  // No PII
+}
+
+message GetAccountRequest {
+  string id = 1 [
+    (pii.v1.sensitivity) = LOW,
+    (pii.v1.pii_type) = CUSTOMER_ID
+  ];
+
+  bool include_sensitive_data = 2;  // No PII
+}
+
+message UpdateAccountRequest {
+  option (pii.v1.message_sensitivity) = HIGH;
+
+  Account account = 1 [
+    (pii.v1.sensitivity) = HIGH
+  ];
+
+  google.protobuf.FieldMask update_mask = 2;  // No PII
+}
+
+message DeleteAccountRequest {
+  string id = 1 [
+    (pii.v1.sensitivity) = LOW,
+    (pii.v1.pii_type) = CUSTOMER_ID
+  ];
+
+  bool hard_delete = 2;  // No PII
+}
+
+message ListAccountsRequest {
+  int32 page_size = 1;  // No PII
+  string page_token = 2;  // No PII
+  string filter = 3;  // Could contain PII in filter expressions
+  string order_by = 4;  // No PII
+}
+
+message ListAccountsResponse {
+  option (pii.v1.message_sensitivity) = HIGH;
+
+  repeated Account accounts = 1 [
+    (pii.v1.sensitivity) = HIGH
+  ];
+
+  string next_page_token = 2;  // No PII
+  int32 total_count = 3;  // No PII
+}
+
+message SearchAccountsRequest {
+  option (pii.v1.message_sensitivity) = HIGH;
+
+  // Search fields - all contain PII
+  string name = 1 [
+    (pii.v1.sensitivity) = LOW,
+    (pii.v1.pii_type) = NAME
+  ];
+
+  string email = 2 [
+    (pii.v1.sensitivity) = MEDIUM,
+    (pii.v1.pii_type) = EMAIL_PERSONAL
+  ];
+
+  string phone = 3 [
+    (pii.v1.sensitivity) = MEDIUM,
+    (pii.v1.pii_type) = PHONE_PERSONAL
+  ];
+
+  string ssn = 4 [
+    (pii.v1.sensitivity) = HIGH,
+    (pii.v1.pii_type) = SSN
+  ];
+
+  string date_of_birth = 5 [
+    (pii.v1.sensitivity) = MEDIUM,
+    (pii.v1.pii_type) = DATE_OF_BIRTH
+  ];
+
+  // Pagination - No PII
+  int32 page_size = 10;
+  string page_token = 11;
+}
+
+message SearchAccountsResponse {
+  option (pii.v1.message_sensitivity) = HIGH;
+
+  repeated Account accounts = 1 [
+    (pii.v1.sensitivity) = HIGH
+  ];
+
+  string next_page_token = 2;  // No PII
+  int32 total_matches = 3;  // No PII
+}

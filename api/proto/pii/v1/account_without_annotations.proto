@@ -1,0 +1,191 @@
+syntax = "proto3";
+
+package pii.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/empty.proto";
+
+option java_multiple_files = true;
+option java_outer_classname = "AccountProto";
+option java_package = "com.example.pii.v1";
+option go_package = "github.com/bhatti/todo-api-errors/api/proto/pii/v1;pii";
+
+// AccountService provides CRUD operations for user accounts
+// This version does NOT have PII annotations - it will be analyzed for PII detection
+service AccountService {
+  // Create a new account
+  rpc CreateAccount(CreateAccountRequest) returns (Account);
+
+  // Get account details
+  rpc GetAccount(GetAccountRequest) returns (Account);
+
+  // Update account information
+  rpc UpdateAccount(UpdateAccountRequest) returns (Account);
+
+  // Delete an account
+  rpc DeleteAccount(DeleteAccountRequest) returns (google.protobuf.Empty);
+
+  // List accounts
+  rpc ListAccounts(ListAccountsRequest) returns (ListAccountsResponse);
+
+  // Search accounts by various fields
+  rpc SearchAccounts(SearchAccountsRequest) returns (SearchAccountsResponse);
+}
+
+// Account represents a user account
+message Account {
+  // System fields
+  string id = 1;
+  string account_number = 2;
+  AccountStatus status = 3;
+  google.protobuf.Timestamp created_at = 4;
+  google.protobuf.Timestamp updated_at = 5;
+
+  // Personal information
+  string first_name = 10;
+  string last_name = 11;
+  string middle_name = 12;
+  string date_of_birth = 13;  // Format: YYYY-MM-DD
+  string gender = 14;
+
+  // Contact information
+  string email = 20;
+  string personal_email = 21;
+  string work_email = 22;
+  string phone = 23;
+  string mobile_phone = 24;
+  string work_phone = 25;
+
+  // Address information
+  Address home_address = 30;
+  Address work_address = 31;
+  Address mailing_address = 32;
+
+  // Government IDs
+  string ssn = 40;
+  string tax_id = 41;
+  string passport_number = 42;
+  string drivers_license = 43;
+  string national_id = 44;
+
+  // Financial information
+  string bank_account_number = 50;
+  string routing_number = 51;
+  string credit_card_number = 52;
+  string credit_card_cvv = 53;
+  string credit_card_expiry = 54;
+  double annual_income = 55;
+  int32 credit_score = 56;
+
+  // Employment information
+  string employer_name = 60;
+  string job_title = 61;
+  string employee_id = 62;
+  double salary = 63;
+
+  // Medical information
+  string medical_record_number = 70;
+  string health_insurance_id = 71;
+  repeated string medical_conditions = 72;
+  repeated string prescriptions = 73;
+
+  // Authentication
+  string username = 80;
+  string password_hash = 81;
+  string security_question = 82;
+  string security_answer = 83;
+  string api_key = 84;
+  string access_token = 85;
+
+  // Device information
+  string ip_address = 90;
+  string device_id = 91;
+  string user_agent = 92;
+  Location last_location = 93;
+
+  // Additional fields
+  map<string, string> metadata = 100;
+  repeated string tags = 101;
+}
+
+// Address message
+message Address {
+  string street_line1 = 1;
+  string street_line2 = 2;
+  string city = 3;
+  string state = 4;
+  string postal_code = 5;
+  string country = 6;
+}
+
+// Location for geolocation data
+message Location {
+  double latitude = 1;
+  double longitude = 2;
+  double accuracy = 3;
+  google.protobuf.Timestamp timestamp = 4;
+}
+
+// Account status enum
+enum AccountStatus {
+  ACCOUNT_STATUS_UNSPECIFIED = 0;
+  ACTIVE = 1;
+  SUSPENDED = 2;
+  CLOSED = 3;
+  PENDING = 4;
+}
+
+// Request/Response messages
+
+message CreateAccountRequest {
+  Account account = 1;
+  string idempotency_key = 2;
+}
+
+message GetAccountRequest {
+  string id = 1;
+  bool include_sensitive_data = 2;
+}
+
+message UpdateAccountRequest {
+  Account account = 1;
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+message DeleteAccountRequest {
+  string id = 1;
+  bool hard_delete = 2;
+}
+
+message ListAccountsRequest {
+  int32 page_size = 1;
+  string page_token = 2;
+  string filter = 3;
+  string order_by = 4;
+}
+
+message ListAccountsResponse {
+  repeated Account accounts = 1;
+  string next_page_token = 2;
+  int32 total_count = 3;
+}
+
+message SearchAccountsRequest {
+  // Search by various fields (all potentially PII)
+  string name = 1;
+  string email = 2;
+  string phone = 3;
+  string ssn = 4;
+  string date_of_birth = 5;
+
+  // Pagination
+  int32 page_size = 10;
+  string page_token = 11;
+}
+
+message SearchAccountsResponse {
+  repeated Account accounts = 1;
+  string next_page_token = 2;
+  int32 total_matches = 3;
+}

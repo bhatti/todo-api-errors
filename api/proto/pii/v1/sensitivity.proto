@@ -1,0 +1,105 @@
+syntax = "proto3";
+
+package pii.v1;
+
+import "google/protobuf/descriptor.proto";
+
+option java_multiple_files = true;
+option java_outer_classname = "SensitivityProto";
+option java_package = "com.example.pii.v1";
+option go_package = "github.com/bhatti/todo-api-errors/api/proto/pii/v1;pii";
+
+// SensitivityLevel provides a simplified 4-tier classification for PII data
+enum SensitivityLevel {
+  // Default - sensitivity not specified
+  SENSITIVITY_UNSPECIFIED = 0;
+
+  // PUBLIC - Non-sensitive public data
+  // Examples: Company name, public product info, non-personal metadata
+  PUBLIC = 1;
+
+  // LOW - Low sensitivity personal data
+  // Examples: Name, job title, work email, work address
+  LOW = 2;
+
+  // MEDIUM - Moderate sensitivity personal data
+  // Examples: Personal email, phone, date of birth, home address
+  MEDIUM = 3;
+
+  // HIGH - Highly sensitive personal data
+  // Examples: SSN, credit card, bank account, medical records, passwords
+  HIGH = 4;
+}
+
+// PiiType categorizes specific types of PII
+enum PiiType {
+  PII_TYPE_UNSPECIFIED = 0;
+
+  // Basic Identity
+  NAME = 1;                    // Full name, first/last name
+  DATE_OF_BIRTH = 2;          // Birth date
+  GENDER = 3;                 // Gender identity
+
+  // Contact Information
+  EMAIL_PERSONAL = 4;         // Personal email
+  EMAIL_WORK = 5;            // Work email
+  PHONE_PERSONAL = 6;        // Personal phone
+  PHONE_WORK = 7;           // Work phone
+  ADDRESS_HOME = 8;         // Home address
+  ADDRESS_WORK = 9;         // Work address
+
+  // Government IDs
+  SSN = 10;                  // Social Security Number
+  TAX_ID = 11;              // Tax ID (EIN, ITIN)
+  PASSPORT = 12;            // Passport number
+  DRIVERS_LICENSE = 13;     // Driver's license
+  NATIONAL_ID = 14;         // National ID card
+
+  // Financial
+  BANK_ACCOUNT = 15;        // Bank account number
+  CREDIT_CARD = 16;         // Credit card number
+  ROUTING_NUMBER = 17;      // Bank routing number
+
+  // Medical
+  MEDICAL_RECORD = 18;      // Medical record number
+  HEALTH_INSURANCE = 19;    // Health insurance ID
+
+  // Authentication
+  PASSWORD = 20;            // Password/passphrase
+  API_KEY = 21;            // API keys/tokens
+
+  // Device/Network
+  IP_ADDRESS = 22;         // IP address
+  DEVICE_ID = 23;         // Device identifier
+
+  // Account
+  USERNAME = 24;          // Username/login ID
+  CUSTOMER_ID = 25;       // Customer/account ID
+}
+
+// Field-level annotation for PII sensitivity
+extend google.protobuf.FieldOptions {
+  // Sensitivity level of the field
+  SensitivityLevel sensitivity = 70000;
+
+  // Type of PII in this field
+  PiiType pii_type = 70001;
+
+  // Multiple PII types if field contains composite data
+  repeated PiiType pii_types = 70002;
+}
+
+// Method-level annotation for API sensitivity
+extend google.protobuf.MethodOptions {
+  // Highest sensitivity level returned by this method
+  SensitivityLevel method_sensitivity = 70003;
+
+  // Whether this method requires PII audit logging
+  bool audit_pii_access = 70004;
+}
+
+// Message-level annotation
+extend google.protobuf.MessageOptions {
+  // Highest sensitivity level in this message
+  SensitivityLevel message_sensitivity = 70005;
+}

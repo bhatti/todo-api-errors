@@ -6,6 +6,11 @@ build:
     - check-api-break-automation/venv
     - check-api-break-automation/__pycache__
     - check-api-break-automation/.pytest_cache
+    - check-pii-automation/venv
+    - check-pii-automation/__pycache__
+    - check-pii-automation/.pytest_cache
+    - check-pii-automation/reference
+    - check-pii-automation/output
     - "**/.venv"
     - "**/venv"
     - "**/__pycache__"
@@ -29,5 +34,7 @@ lint:
   ignore_only:
     RPC_RESPONSE_STANDARD_NAME:
       - api/proto/todo/v1/todo.proto
+      - api/proto/pii/v1/account_without_annotations.proto
+      - api/proto/pii/v1/account_with_annotations.proto
   ignore:
     - vendor
