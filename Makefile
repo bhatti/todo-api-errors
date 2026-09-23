@@ -1,4 +1,21 @@
+IMAGE   ?= plexobject/todo-api-errors
+NO_CACHE ?=
+
 .DEFAULT_GOAL := all
+
+.PHONY: docker-build docker-push
+
+docker-build:    ## Build multi-arch image (linux/amd64,linux/arm64) and push
+	docker buildx rm multiarch 2>/dev/null || true
+	docker buildx create --name multiarch --use --bootstrap \
+	    --driver-opt env.BUILDKIT_STEP_LOG_MAX_SIZE=52428800
+	docker buildx build --platform linux/amd64,linux/arm64 \
+	    $(if $(NO_CACHE),--no-cache,) \
+	    -t $(IMAGE):latest \
+	    --push --provenance=false .
+
+docker-push:     ## Re-push already-built image (no rebuild)
+	docker push $(IMAGE):latest
 
 .PHONY: gencert
 gencert: 
